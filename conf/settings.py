@@ -87,8 +87,8 @@ DATABASES = {
         'NAME': os.getenv("POSTGRES_DB"),
         'USER': os.getenv("POSTGRES_USER"),
         'PASSWORD': os.getenv("POSTGRES_PASSWORD"),
-        # 'HOST': os.getenv("POSTGRES_HOST"),
-        # 'PORT': os.getenv("POSTGRES_PORT"),
+        'HOST': os.getenv("POSTGRES_HOST"),
+        'PORT': os.getenv("POSTGRES_PORT"),
     }
 }
 
@@ -140,25 +140,19 @@ STATIC_ROOT = 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# настройки для запуска из IDE
-# URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Например, Redis, который по умолчанию работает на порту 6379
-
-# URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+# # run in IDE
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Например, Redis, который по умолчанию работает на порту 6379
+#
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 
-# # настройки для docker
-# CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
-# CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+# run in docker
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
-# Часовой пояс для работы Celery
+# Timezone for Celery
 CELERY_TIMEZONE = "Europe/Moscow"
 
-# Флаг отслеживания выполнения задач
 CELERY_TASK_TRACK_STARTED = True
 
-DJANGO_CELERY_BEAT_TZ_AWARE = False  # использовать в django_celery_beat текущий часовой пояс
-
-# команда для запуска worker: celery -A conf worker -l INFO -P eventlet
-# команда для запуска beat: celery -A conf beat -l info -S django
+DJANGO_CELERY_BEAT_TZ_AWARE = False
