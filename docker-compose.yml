@@ -1,0 +1,79 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    container_name: postgresql_app
+    env_file:
+      - .env
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    restart: always
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis
+    container_name: redis_app
+    command: redis-server --save 20 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/cache/:/data
+    restart: always
+
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: app_container
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      celery:
+        condition: service_started
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+
+  celery:
+    build: .
+    container_name: celery_app
+    command: celery -A conf worker -l info
+    volumes:
+      - ./data/celery/:/code
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  celery-beat:
+    build: .
+    container_name: celery-beat_app
+    command: celery -A conf beat -l info -S django
+    volumes:
+      - ./data/celery/:/code
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      celery:
+        condition: service_started
+      app:
+        condition: service_started
+
