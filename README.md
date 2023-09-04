@@ -7,26 +7,26 @@ which can be read only once during set time using secret phrase.
 
 App doesn't store original message or secret phrase. Internal algorithm to save information:
 
-- app hashes the secret phrase to use it as the key to encrypt the message
+- app hashes a secret phrase to use it as a key to encrypt a message
 - app encrypts the message and save it
-- app hashes the key second time and save it as the primary key
+- app hashes the key second time and save it
 - app create the one-off periodic task with name of related database instance to delete the database instance
 after a certain amount of time (which you can set using format DD:HH:MM or 7 days will be set automatically)
 
 Internal algorithm to get the message:
-- app hashes got secret phrase to use as the key to decrypt the message, if the message still exists
-- app hashes the key second time and tries to find the instance
+- app hashes got the secret phrase to use it as the key to decrypt the message, if the message still exists
+- app hashes the key second time and find the instance
 - app decrypts the message out of found instance
-- app deletes the database instance and related periodic task
+- app deletes the instance and related periodic task
 
-If expiration time is reached and the message wasn't gotten from the database, instance will be deleted
+If expiration time is reached and the message wasn't gotten from the database, the instance will be deleted
 as well as related periodic task.
 
 You can run app by docker using one command:
 
     docker-compose up
 
-Two addresses are available. The first:
+Two addresses are available. The first one:
 
     /generate/
 
@@ -59,4 +59,6 @@ Response in case of success:
 
 ***
 Documentation is available on /docs/ or /redoc/
+
+Current test coverage 90%
 ***

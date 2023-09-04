@@ -55,3 +55,60 @@ class SecretTestCase(APITestCase):
         # Check that the periodic task was deleted together with the secret object
         task = PeriodicTask.objects.filter(name=task_name)
         self.assertFalse(task)
+
+    def test_create_secret_with_wrong_data(self):
+        """
+        Test creating and deleting a secret using incorrect data
+        """
+        self.data['expiration_time'] = '123er'
+        # Create a secret
+        response = self.client.post(
+            reverse('secret:create'),
+            data=self.data
+        )
+        # Check that the secret wasn't created
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+        # Check the response
+        self.assertEqual(
+            response.json(),
+            {'expiration_time': ['Format the string of time deleting: DD:HH:MM']}
+        )
+
+        self.data['expiration_time'] = '15:30:70'
+        # Create a secret
+        response = self.client.post(
+            reverse('secret:create'),
+            data=self.data
+        )
+        # Check that the secret wasn't created
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+        # Check the response
+        self.assertEqual(
+            response.json(),
+            {'expiration_time': ['Hours or minutes set incorrectly']}
+        )
+
+        del self.data['expiration_time']
+        self.data['message'] = self.data['secret_phrase'] = ''
+        # Create a secret
+        response = self.client.post(
+            reverse('secret:create'),
+            data=self.data
+        )
+        # Check that the secret wasn't created
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+        # Check the response
+        self.assertEqual(
+            response.json(),
+            {'secret_phrase': ['This field may not be blank.'], 'message': ['This field may not be blank.']}
+
+        )
