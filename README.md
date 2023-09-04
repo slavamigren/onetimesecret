@@ -28,7 +28,7 @@ You can run app by docker using one command:
 
 Two addresses are available. The first one:
 
-    /generate/
+    localhost:8000/generate/
 
 Send POST request to create a secret message. An example of data for request:
 
@@ -45,11 +45,11 @@ Response in case of success:
 
 The second address:
 
-    /secrets/{secret phrase}/
+    localhost:8000/secrets/{secret phrase}/
 
 Send DELETE request to get a secret message and delete it from database. An example of request:
 
-    /secrets/Time is over/
+    localhost:8000/secrets/Time is over/
 
 Response in case of success:
 
@@ -58,7 +58,7 @@ Response in case of success:
     }
 
 ***
-Documentation is available on /docs/ or /redoc/
+Documentation is available on localhost:8000/docs/ or localhost:8000/redoc/
 
 Current test coverage 90%
 ***
